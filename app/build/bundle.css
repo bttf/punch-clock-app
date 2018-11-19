@@ -1,0 +1,32 @@
+/*
+ * Global constants goes here
+ */
+ /*
+:root {
+    --primary-color: #42b983;
+}
+*/
+
+
+/*
+ * Global CSS goes here, it requires to use :global before each style
+ */
+html {
+    height: 100%;
+}
+body {
+    display: flex;
+    align-items: space-between;
+    justify-content: center;
+    height: 100%;
+    margin: auto;
+}
+#app {
+    color: #2c3e50;
+    max-width: 600px;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+    text-align: center;
+}
+.hello {
+    color: var(--primary-color);
+}
