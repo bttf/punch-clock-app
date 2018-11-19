@@ -1,19 +1,24 @@
 import React, { Component } from 'react'
 import Creatable from 'react-select/lib/Creatable';
-import styled from 'styled-components';
+import styled, { createGlobalStyle } from 'styled-components';
 import uuid from 'uuid/v4';
-import Modal from 'react-modal';
+import ProjectPanel from './ProjectPanel';
 import {
   loadProjects,
   createProject,
   updateProject,
 } from './lib/localStorage';
 
+const GlobalStyle = createGlobalStyle`
+  body {
+    color: #2c3e50;
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
+  }
+`;
+
 const AppWrapper = styled.div`
   margin: 0 auto;
   max-width: 600px;
-  color: #2c3e50;
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   text-align: center;
 `;
 
@@ -78,24 +83,41 @@ export default class App extends Component {
     });
   }
 
+  reloadProject = (project) => {
+    const reloadedProject = loadProjects().find(p => p.id === project.id);
+    this.setState({
+      selectedProject: reloadedProject,
+    })
+  }
+
   render() {
     const { selectedProject } = this.state;
     return (
-      <AppWrapper>
-        <Title>⏱ <I>Clock-In</I></Title>
+      <React.Fragment>
+        <GlobalStyle />
+        <AppWrapper>
+          <Title>⏱ <I>Punch clock</I></Title>
 
-        <ProjectSelect>
-          <ProjectSelectPrompt>Select project</ProjectSelectPrompt>
-          <Creatable
-            isClearable
-            onChange={this.selectProject}
-            onCreateOption={this.createProject}
-            options={this.state.projects.map(genOption)}
-            value={selectedProject ? genOption(selectedProject) : null}
-          />
-        </ProjectSelect>
+          <ProjectSelect>
+            <ProjectSelectPrompt>Select project</ProjectSelectPrompt>
+            <Creatable
+              isClearable
+              onChange={this.selectProject}
+              onCreateOption={this.createProject}
+              options={this.state.projects.map(genOption)}
+              value={selectedProject ? genOption(selectedProject) : null}
+            />
+          </ProjectSelect>
 
-      </AppWrapper>
+          {selectedProject && (
+            <ProjectPanel
+              project={selectedProject}
+              reloadProject={this.reloadProject}
+            />
+          )}
+
+        </AppWrapper>
+      </React.Fragment>
     );
   }
 }
