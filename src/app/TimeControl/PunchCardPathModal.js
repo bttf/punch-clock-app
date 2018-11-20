@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Modal from 'react-modal';
 import styled from 'styled-components';
 import { remote } from 'electron';
+import slugify from 'slugify';
 
 Modal.setAppElement('#app');
 
@@ -22,6 +23,10 @@ const Prompt = styled.p`
   font-size: 1.5rem;
 `;
 
+const SelectPathWrapper = styled.div`
+  display: flex;
+`;
+
 const PathDisplay = styled.input.attrs({
   disabled: true,
   placeholder: 'Select a path'
@@ -34,19 +39,13 @@ const PathDisplay = styled.input.attrs({
   background-color: #efefef;
 `;
 
-const Hint = styled.p`
-  color: #ccc;
-  font-size: 0.75rem;
-`;
-
 const SelectButton = styled.button`
   cursor: pointer;
-  margin-top: 1rem;
   font-size: 1rem;
   padding: .375rem .75rem;
   border: 0;
   color: white;
-  background-color: #00E7FF;
+  background-color: #0072B0;
 `;
 
 const SaveButton = styled.button`
@@ -64,13 +63,19 @@ export default class PunchCardPathModal extends Component {
 
   displayFileDialog = () => {
     const { dialog } = remote;
-    dialog.showOpenDialog({
-      properties: ['openDirectory', 'createDirectory']
-    }, (filePaths) => {
-      if (filePaths && filePaths.length) {
-        this.setState({ selectedPath: filePaths[0] });
+    const { project } = this.props;
+    dialog.showSaveDialog({
+      defaultPath: `${slugify(project.name, '_')}.punchcard`,
+    }, (filename) => {
+      if (filename) {
+        this.setState({ selectedPath: filename });
       }
     });
+  }
+
+  onSave = () => {
+    this.props.onSetPath(this.state.selectedPath);
+    this.setState({ selectedPath: '' });
   }
 
   render() {
@@ -78,20 +83,19 @@ export default class PunchCardPathModal extends Component {
     const { selectedPath } = this.state;
 
     return (
-      <Modal
-        isOpen={!project.punchCardPath}
-      >
+      <Modal isOpen={!project.punchCardPath}>
         <ModalWrapper>
           <Header>{project.name} - Select punch card path</Header>
           <Prompt>Punch clock will save a <em>Punch Card</em> file storing your timestamp data for this project.</Prompt>
           <Prompt>Please select a location to store this file:</Prompt>
-          <PathDisplay value={this.state.selectedPath} />
-          <Hint>A good place to store this would be a project directory that is under version control, such as git.</Hint>
-          <SelectButton onClick={this.displayFileDialog}>Select</SelectButton>
+
+          <SelectPathWrapper>
+            <PathDisplay value={selectedPath} />
+            <SelectButton onClick={this.displayFileDialog}>Select</SelectButton>
+          </SelectPathWrapper>
+
           {selectedPath && (
-            <SaveButton
-              onClick={() => this.props.onSetPath(selectedPath)}
-            >Save</SaveButton>
+            <SaveButton onClick={this.onSave}>Done</SaveButton>
           )}
         </ModalWrapper>
       </Modal>

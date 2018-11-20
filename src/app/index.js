@@ -2,7 +2,7 @@ import React, { Component } from 'react'
 import Creatable from 'react-select/lib/Creatable';
 import styled, { createGlobalStyle } from 'styled-components';
 import uuid from 'uuid/v4';
-import ProjectPanel from './ProjectPanel';
+import TimeControl from './TimeControl';
 import {
   loadProjects,
   createProject,
@@ -52,8 +52,9 @@ export default class App extends Component {
     });
 
     this.state = {
+      isDisabled: false,
       projects,
-      selectedProject: projects.length && projects[0],
+      selectedProject: !!projects.length && projects[0],
     };
   }
 
@@ -90,18 +91,26 @@ export default class App extends Component {
     })
   }
 
+  disableInputs = (isDisabled) => {
+    this.setState({
+      isDisabled,
+    })
+  }
+
   render() {
     const { selectedProject } = this.state;
     return (
       <React.Fragment>
         <GlobalStyle />
         <AppWrapper>
-          <Title>⏱ <I>Punch clock</I></Title>
+          <Title>⏱ <I>Punch clock</I> 🥊</Title>
 
           <ProjectSelect>
             <ProjectSelectPrompt>Select project</ProjectSelectPrompt>
             <Creatable
+              isDisabled={this.state.isDisabled}
               isClearable
+              placeholder="Select or type to create"
               onChange={this.selectProject}
               onCreateOption={this.createProject}
               options={this.state.projects.map(genOption)}
@@ -110,9 +119,11 @@ export default class App extends Component {
           </ProjectSelect>
 
           {selectedProject && (
-            <ProjectPanel
+            <TimeControl
               project={selectedProject}
               reloadProject={this.reloadProject}
+              onStartTime={() => this.disableInputs(true)}
+              onEndTime={() => this.disableInputs(false)}
             />
           )}
 
