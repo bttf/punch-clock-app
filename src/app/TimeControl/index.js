@@ -1,7 +1,8 @@
 import React, { Component } from 'react';
 import Modal from 'react-modal';
 import styled from 'styled-components';
-import PunchCardPathModal from './PunchCardPathModal';
+import TimeCardManager from '../lib/timeCardManager';
+import TimeCardPathModal from './TimeCardPathModal';
 import ProjectInformation from './ProjectInformation';
 import Trigger from './Trigger'
 import {
@@ -23,50 +24,81 @@ const TriggerWrapper = styled(Trigger)`
 `;
 
 export default class TimeControl extends Component {
-  state = {
-    startTime: null,
-    endTime: null,
+  constructor(props) {
+    super(props);
+
+    this.timeCardManager = new TimeCardManager(props.project.timeCardPath);
+
+    this.state = {
+      memo: '',
+      sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
+    };
   }
 
-  onSetPunchCardPath = (path) => {
+  onSetTimeCardPath = (path) => {
     const { project } = this.props;
     updateProject({
       ...project,
-      punchCardPath: path,
+      timeCardPath: path,
     });
     this.props.reloadProject(project);
   }
 
-  setTime = () => {
-    const isStartingTime = !this.state.startTime && !this.state.endTime;
-    const isEndingTime = this.state.startTime && !this.state.endTime;
+  onStartSession = () => {
+    this.props.onStartTime();
+    this.timeCardManager.startSession(this.state.memo);
+    this.setState({
+      sessionStatus: this.timeCardManager.getCurrentSessionStatus()
+    });
+  }
 
-    if (isStartingTime) {
-      this.props.onStartTime();
-      this.setState({ startTime: new Date() });
-    } else if (isEndingTime) {
-      this.props.onEndTime();
-      this.setState({ endTime: new Date() });
-    } else {
-      this.props.onStartTime();
-      this.setState({ startTime: new Date(), endTime: null });
-    }
+  onPauseSession = () => {
+    this.timeCardManager.pauseSession();
+    this.setState({
+      sessionStatus: this.timeCardManager.getCurrentSessionStatus()
+    });
+  }
+
+  onUnpauseSession = () => {
+    this.timeCardManager.unpauseSession();
+    this.setState({
+      sessionStatus: this.timeCardManager.getCurrentSessionStatus()
+    });
+  }
+
+  onStopSession = () => {
+    this.props.onEndTime();
+    this.timeCardManager.stopSession();
+    this.setState({
+      sessionStatus: this.timeCardManager.getCurrentSessionStatus()
+    });
   }
 
   render() {
     const { project } = this.props;
+    const { sessionStatus } = this.state;
     return (
       <React.Fragment>
         <Container>
-          <ProjectInformationWrapper startTime={this.state.startTime} endTime={this.state.endTime} />
-          <TriggerWrapper onClick={this.setTime} startTime={this.state.startTime} endTime={this.state.endTime} />
+          <ProjectInformationWrapper
+            isPaused={sessionStatus === 'paused'}
+            hasStarted={sessionStatus === 'started'}
+            hasEnded={sessionStatus === 'ended'}
+            setMemo={(memo => this.setState({ memo }))}
+          />
+          <TriggerWrapper
+            sessionStatus={sessionStatus}
+            onStart={this.onStartSession}
+            onPause={this.onPauseSession}
+            onUnpause={this.onUnpauseSession}
+            onStop={this.onStopSession}
+          />
         </Container>
 
-
         {/* Displays only if project.punchCardPath is not set */}
-        <PunchCardPathModal
+        <TimeCardPathModal
           project={project}
-          onSetPath={this.onSetPunchCardPath}
+          onSetPath={this.onSetTimeCardPath}
         />
       </React.Fragment>
     );

@@ -1,155 +1,52 @@
 import React, { Component } from 'react';
-import styled, { createGlobalStyle } from 'styled-components';
-
-const Container = styled.div`
-   padding-top: 40px;
-   text-align: center;
-
-  #lcd-clock {
-    height: auto;
-    width: 100%;
-    margin: 0 auto;
-  }
-
-  /* svg specific css */
-  .lcd-element {
-    fill: #FFFFFF;
-    transition: all 0.2s ease-out
-  }
-  .lcd-element-active {
-    fill: #FA4031;
-  }
-
-
-  /*
-  all number-is-* classes are applied alongside .digit
-  eg <g class="hour digit digit-1 number-is-3">
-  */
-
-  /* 1 */
-  .number-is-1 .top-right,
-  .number-is-1 .bottom-right,
-  /* 2 */
-  .number-is-2 .top-center,
-  .number-is-2 .top-right,
-  .number-is-2 .mid-center,
-  .number-is-2 .bottom-left,
-  .number-is-2 .bottom-center,
-  /* 3 */
-  .number-is-3 .top-center,
-  .number-is-3 .top-right,
-  .number-is-3 .mid-center,
-  .number-is-3 .bottom-right,
-  .number-is-3 .bottom-center,
-  /* 4 */
-  .number-is-4 .top-left,
-  .number-is-4 .top-right,
-  .number-is-4 .mid-center,
-  .number-is-4 .bottom-right,
-  /* 5 */
-  .number-is-5 .top-center,
-  .number-is-5 .top-left,
-  .number-is-5 .mid-center,
-  .number-is-5 .bottom-right,
-  .number-is-5 .bottom-center,
-  /* 6 */
-  .number-is-6 .top-center,
-  .number-is-6 .top-left,
-  .number-is-6 .mid-center,
-  .number-is-6 .bottom-right,
-  .number-is-6 .bottom-left,
-  .number-is-6 .bottom-center,
-  /* 7 */
-  .number-is-7 .top-center,
-  .number-is-7 .top-right,
-  .number-is-7 .bottom-right,
-  /* 8 */
-  .number-is-8 .top-center,
-  .number-is-8 .top-left,
-  .number-is-8 .top-right,
-  .number-is-8 .mid-center,
-  .number-is-8 .bottom-right,
-  .number-is-8 .bottom-left,
-  .number-is-8 .bottom-center,
-  /* 9 */
-  .number-is-9 .top-center,
-  .number-is-9 .top-left,
-  .number-is-9 .top-right,
-  .number-is-9 .mid-center,
-  .number-is-9 .bottom-right,
-  .number-is-9 .bottom-center,
-  /* 0 */
-  .number-is-0 .top-center,
-  .number-is-0 .top-left,
-  .number-is-0 .top-right,
-  .number-is-0 .bottom-right,
-  .number-is-0 .bottom-left,
-  .number-is-0 .bottom-center
-  {
-    fill: #FA4031;
-  }
-`;
+import Container from './Container';
 
 export default class ClockDisplay extends Component {
-  state = {
-    updateClockHandler: null,
-  };
+  state = { timeoutHandler: null };
 
   updateClock = () => {
-    const { startTime } = this.props;
-    const now = new Date().getTime();
-    const delta = (now - startTime.getTime()) / 1000;
+    const delta = this.props.getDelta() / 1000;
 
     const second = (delta % 60) | 0;
     const minute = (delta / 60) | 0;
     const hour = (minute / 60) | 0;
+
     const clocktime = {
       second,
       minute,
       hour
     };
 
-    for (var timeUnit in clocktime) {
-      // convert all to values to string,
-      // pad single values, ie 8 to 08
-      // split the values into an array of single characters
+    for (let timeUnit in clocktime) {
       clocktime[timeUnit] = clocktime[timeUnit].toString();
+
       if (clocktime[timeUnit].length == 1) {
         clocktime[timeUnit] = '0'+clocktime[timeUnit];
       }
+
       clocktime[timeUnit] = clocktime[timeUnit].split('');
 
-      // update each digit for this time unit
-      for (var i=0; i<2; i++) {
-        var selector = '#lcd-clock .'+timeUnit+'.digit-'+(i+1);
-        var className = 'number-is-'+clocktime[timeUnit][i];
-        // remove any pre-existing classname
-        for (var j=0; j<10; j++) {
-          var oldClass = 'number-is-'+j;
+      for (let i=0; i<2; i++) {
+        let selector = '#lcd-clock .'+timeUnit+'.digit-'+(i+1);
+        let className = 'number-is-'+clocktime[timeUnit][i];
+
+        for (let j=0; j<10; j++) {
+          let oldClass = 'number-is-'+j;
           document.querySelector(selector).classList.remove(oldClass);
         }
-        // add the relevant classname to the appropriate clock digit
+
         document.querySelector(selector).classList.add(className);
       }
     }
 
-    if (!this.props.endTime) {
-      this.setState({
-        updateClockHandler: setTimeout(this.updateClock, 500),
-      });
-    } else {
-      this.setState({
-        updateClockHandler: null,
-      });
-    }
+    const timeoutHandler = this.props.hasEnded ?
+      null : setTimeout(this.updateClock, 200);
+    this.setState({ timeoutHandler });
   }
 
   render() {
-    if (
-      this.props.startTime &&
-      !this.props.endTime &&
-      !this.state.updateClockHandler
-    ) {
+    // TODO implement this in a didReceiveProps handler or the like (only on start)
+    if (!this.props.hasEnded && !this.state.timeoutHandler) {
       this.updateClock();
     }
 
@@ -364,8 +261,7 @@ export default class ClockDisplay extends Component {
               <polygon points="1318.958,141 1358.958,141 1362.45,41 1322.45,41"/>
               <polygon points="1362.45,41 1322.45,41 1343.149,21"/>
               <polygon points="1318.958,141 1358.958,141 1338.261,161"/>
-            </g>
-            <g className="lcd-element top-left">
+
               <polygon points="1176.958,141 1216.958,141 1220.45,41 1180.45,41"/>
               <polygon points="1220.45,41 1180.45,41 1201.149,21"/>
               <polygon points="1176.958,141 1216.958,141 1196.261,161"/>
@@ -392,7 +288,6 @@ export default class ClockDisplay extends Component {
             </g>
           </g>
         </svg>
-
       </Container>
     );
   }

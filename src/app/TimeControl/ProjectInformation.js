@@ -46,11 +46,14 @@ const Memo = styled.input.attrs({
   flex: 0;
   font-size: .8rem;
   padding: .5rem;
+  ${props => props.disabled ? 'background-color: hsl(0,0%,95%)' : ''}
 `;
 
 export default class ProjectInformation extends Component {
   render() {
     const totalTime = '0h 0m 0s';
+    const { hasStarted, hasEnded, isPaused } = this.props;
+
     return (
       <ProjectInfoContainer {...this.props}>
         <TimeTable>
@@ -62,10 +65,14 @@ export default class ProjectInformation extends Component {
 
         <ClockAndMemo>
           <ClockDisplayWrapper
-            startTime={this.props.startTime}
-            endTime={this.props.endTime}
+            hasStarted={hasStarted}
+            hasEnded={hasEnded}
+            getDelta={() => 1524129}
           />
-          <Memo />
+          <Memo
+            disabled={hasStarted || isPaused}
+            onChange={e => this.props.setMemo(e.currentTarget.value)}
+          />
         </ClockAndMemo>
       </ProjectInfoContainer>
     );

@@ -58,14 +58,14 @@ const SaveButton = styled.button`
   background-color: #00B017;
 `;
 
-export default class PunchCardPathModal extends Component {
+export default class TimeCardPathModal extends Component {
   state = { selectedPath: '' }
 
   displayFileDialog = () => {
     const { dialog } = remote;
     const { project } = this.props;
     dialog.showSaveDialog({
-      defaultPath: `${slugify(project.name, '_')}.punchcard`,
+      defaultPath: `${slugify(project.name, '_')}.timecard`,
     }, (filename) => {
       if (filename) {
         this.setState({ selectedPath: filename });
@@ -83,10 +83,10 @@ export default class PunchCardPathModal extends Component {
     const { selectedPath } = this.state;
 
     return (
-      <Modal isOpen={!project.punchCardPath}>
+      <Modal isOpen={!project.timeCardPath}>
         <ModalWrapper>
-          <Header>{project.name} - Select punch card path</Header>
-          <Prompt>Punch clock will save a <em>Punch Card</em> file storing your timestamp data for this project.</Prompt>
+          <Header>{project.name} - Select time card path</Header>
+          <Prompt>Punch clock will save a <em>Time Card</em> file storing your timestamp data for this project.</Prompt>
           <Prompt>Please select a location to store this file:</Prompt>
 
           <SelectPathWrapper>

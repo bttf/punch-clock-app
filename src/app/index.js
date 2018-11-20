@@ -126,7 +126,6 @@ export default class App extends Component {
               onEndTime={() => this.disableInputs(false)}
             />
           )}
-
         </AppWrapper>
       </React.Fragment>
     );

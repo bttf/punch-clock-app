@@ -3,7 +3,7 @@ import styled from 'styled-components';
 
 const Container = styled.div`
    flex: 1;
-  display: flex;
+   display: flex;
 `;
 
 const TriggerButton = styled.button`
@@ -16,31 +16,35 @@ const TriggerButton = styled.button`
   }};
   color: white;
   font-weight: bold;
+  outline: 0;
+  cursor: pointer;
 `;
 
 export default class Trigger extends Component {
   render() {
-    const hasStarted = this.props.startTime && !this.props.endTime;
+    const sessionStatus = this.props.sessionStatus;
     return (
       <Container>
-        {hasStarted ? (
+        {sessionStatus !== 'ended' ? (
           <React.Fragment>
-            <TriggerButton
-              type="end"
-              className={this.props.className}
-              onClick={this.props.onClick}
-            >STOP</TriggerButton>
             <TriggerButton
               type="pause"
               className={this.props.className}
-              onClick={this.props.onClick}
-            >PAUSE</TriggerButton>
+              onClick={sessionStatus === 'paused' ? this.props.onUnpause: this.props.onPause}
+            >
+              {sessionStatus === 'paused' ? 'UNPAUSE' : 'PAUSE'}
+            </TriggerButton>
+            <TriggerButton
+              type="end"
+              className={this.props.className}
+              onClick={this.props.onStop}
+            >STOP</TriggerButton>
           </React.Fragment>
         ) : (
           <TriggerButton
             type="start"
             className={this.props.className}
-            onClick={this.props.onClick}
+            onClick={this.props.onStart}
           >START</TriggerButton>
         )}
       </Container>
