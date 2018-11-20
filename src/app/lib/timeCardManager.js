@@ -34,7 +34,6 @@ class TimeCardManager {
     try {
       contents = fs.readFileSync(this.timeCardPath, 'utf8');
     } catch(e) {
-      console.log('no such file');
       if (e.message.includes('no such file')) {
         return { sessions: [] };
       }
@@ -61,7 +60,6 @@ class TimeCardManager {
   }
 
   writeTimeCard(sessions) {
-    console.log('debug writeTimeCard', sessions);
     const timeCardPath = this.timeCardPath;
     const sessionsJSON = JSON.stringify({ sessions });
     fs.writeFileSync(timeCardPath, sessionsJSON, 'utf8');
@@ -77,8 +75,6 @@ class TimeCardManager {
     } else {
       updatedSessions = [...sessions, session];
     }
-
-    console.log('updateTimeCard', updatedSessions);
 
     this.writeTimeCard(updatedSessions);
   }
@@ -98,8 +94,6 @@ class TimeCardManager {
         endTime: null,
       }],
     };
-
-    console.log('debug startSession', this.currentSession);
 
     this.updateTimeCard(this.currentSession);
   }
@@ -133,8 +127,6 @@ class TimeCardManager {
   unpauseSession() {
     const currentSession = this.currentSession;
 
-    console.log('debug unpauseSession currentSession', currentSession);
-
     if (!currentSession || !currentSession.times.length) {
       throw new Error('Cannot unpause time for session that has not started');
     }
@@ -166,7 +158,8 @@ class TimeCardManager {
     const recentTime = currentSession.times.slice(-1)[0];
 
     if (recentTime.endTime) {
-      throw new Error('Cannot end session that has already ended');
+      this.currentSession = null;
+      return;
     }
 
     this.currentSession = {
@@ -187,9 +180,19 @@ class TimeCardManager {
   getCurrentSessionDelta() {
     const currentSession = this.currentSession;
 
-    if (!currentSession) throw new Error('Cannot get delta for non-started session');
+    if (!currentSession) return 0;
 
-    // TODO calculate delta
+    const times = currentSession.times;
+
+    if (!times || !times.length) return 0;
+
+    const delta = times.reduce((acc, time) => {
+      const start = new Date(time.startTime);
+      const end = time.endTime ? new Date(time.endTime) : new Date();
+      return acc + (end.getTime() - start.getTime());
+    }, 0);
+
+    return delta;
   }
 
   getCurrentSessionStatus() {
@@ -197,7 +200,6 @@ class TimeCardManager {
 
     if (!currentSession) return 'ended'
 
-    console.log('getStatus: times', currentSession.times);
     const recentTime = currentSession.times.slice(-1)[0];
 
     if (!recentTime) {

@@ -32,7 +32,7 @@ export default class Trigger extends Component {
               className={this.props.className}
               onClick={sessionStatus === 'paused' ? this.props.onUnpause: this.props.onPause}
             >
-              {sessionStatus === 'paused' ? 'UNPAUSE' : 'PAUSE'}
+              {sessionStatus === 'paused' ? 'RESUME' : 'PAUSE'}
             </TriggerButton>
             <TriggerButton
               type="end"

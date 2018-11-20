@@ -4,6 +4,10 @@ import Container from './Container';
 export default class ClockDisplay extends Component {
   state = { timeoutHandler: null };
 
+  componentDidMount() {
+    this.updateClock();
+  }
+
   updateClock = () => {
     const delta = this.props.getDelta() / 1000;
 
@@ -39,17 +43,10 @@ export default class ClockDisplay extends Component {
       }
     }
 
-    const timeoutHandler = this.props.hasEnded ?
-      null : setTimeout(this.updateClock, 200);
-    this.setState({ timeoutHandler });
+    setTimeout(this.updateClock, 500);
   }
 
   render() {
-    // TODO implement this in a didReceiveProps handler or the like (only on start)
-    if (!this.props.hasEnded && !this.state.timeoutHandler) {
-      this.updateClock();
-    }
-
     return (
       <Container className={this.props.className}>
         <svg version="1.1" id="lcd-clock" x="0px" y="0px"
@@ -261,7 +258,8 @@ export default class ClockDisplay extends Component {
               <polygon points="1318.958,141 1358.958,141 1362.45,41 1322.45,41"/>
               <polygon points="1362.45,41 1322.45,41 1343.149,21"/>
               <polygon points="1318.958,141 1358.958,141 1338.261,161"/>
-
+            </g>
+            <g className="lcd-element top-left">
               <polygon points="1176.958,141 1216.958,141 1220.45,41 1180.45,41"/>
               <polygon points="1220.45,41 1180.45,41 1201.149,21"/>
               <polygon points="1176.958,141 1216.958,141 1196.261,161"/>

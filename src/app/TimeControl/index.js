@@ -81,6 +81,7 @@ export default class TimeControl extends Component {
       <React.Fragment>
         <Container>
           <ProjectInformationWrapper
+            getDelta={() => this.timeCardManager.getCurrentSessionDelta()}
             isPaused={sessionStatus === 'paused'}
             hasStarted={sessionStatus === 'started'}
             hasEnded={sessionStatus === 'ended'}

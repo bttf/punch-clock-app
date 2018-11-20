@@ -67,7 +67,7 @@ export default class ProjectInformation extends Component {
           <ClockDisplayWrapper
             hasStarted={hasStarted}
             hasEnded={hasEnded}
-            getDelta={() => 1524129}
+            getDelta={this.props.getDelta}
           />
           <Memo
             disabled={hasStarted || isPaused}
