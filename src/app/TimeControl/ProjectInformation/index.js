@@ -1,3 +1,4 @@
+import { remote } from 'electron';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import ClockDisplay from './ClockDisplay';
@@ -51,6 +52,18 @@ const Memo = styled.input.attrs({
   ${props => props.disabled ? 'background-color: hsl(0,0%,95%)' : ''}
 `;
 
+const Byline = styled.div`
+  font-size: 12px;
+  color: #aaa;
+  padding-bottom: 12px;
+  text-align: right;
+
+  a {
+    color: #aaa;
+    cursor: pointer;
+  }
+`;
+
 export default class ProjectInformation extends Component {
   getTotalLoggedTime = () => {
     const { seconds, minutes, hours } =
@@ -85,6 +98,7 @@ export default class ProjectInformation extends Component {
             hasEnded={hasEnded}
             getDelta={getDelta}
           />
+          <Byline>LCD clock by <a onClick={() => remote.shell.openExternal('https://codepen.io/christianhanvey/pen/imKIb')}>@christianhanvey</a></Byline>
           <Memo
             disabled={hasStarted || isPaused}
             value={this.props.memo}

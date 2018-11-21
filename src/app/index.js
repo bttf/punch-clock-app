@@ -1,8 +1,8 @@
+import { remote } from 'electron';
 import React, { Component } from 'react'
 import Creatable from 'react-select/lib/Creatable';
 import styled, { createGlobalStyle } from 'styled-components';
 import uuid from 'uuid/v4';
-import { remote } from 'electron';
 import TimeControl from './TimeControl';
 import {
   loadProjects,
@@ -40,6 +40,18 @@ const ProjectSelectPrompt = styled.p`
 const ProjectSelect = styled.div`
   margin: 1rem 0;
   color: #aaa;
+`;
+
+const Credits = styled.div`
+  padding: 1rem;
+  font-size: 12px;
+  color: #aaa;
+
+  a {
+    color: #aaa;
+    cursor: pointer;
+    text-decoration: underline;
+  }
 `;
 
 const genOption = (project) => ({ label: project.name, value: project.id });
@@ -128,6 +140,9 @@ export default class App extends Component {
               onEndTime={() => this.disableInputs(false)}
             />
           )}
+          <Credits>
+            A <a onClick={() => remote.shell.openExternal('http://redpine.software')}>redpine.software</a> production
+          </Credits>
         </AppWrapper>
       </React.Fragment>
     );
