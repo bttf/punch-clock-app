@@ -27,13 +27,19 @@ export default class TimeControl extends Component {
   constructor(props) {
     super(props);
 
-    this.timeCardManager = new TimeCardManager(props.project.timeCardPath);
+    let timeCardState = {};
+    if (props.project.timeCardPath) {
+      this.timeCardManager = new TimeCardManager(props.project.timeCardPath);
+      timeCardState = {
+        sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
+        timeCardLogs: this.timeCardManager.getTimeCardLogs(),
+        totalProjectTime: this.timeCardManager.getTotalTime(),
+      };
+    }
 
     this.state = {
       memo: '',
-      sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
-      timeCardLogs: this.timeCardManager.getTimeCardLogs(),
-      totalProjectTime: this.timeCardManager.getTotalTime(),
+      ...timeCardState,
     };
   }
 
