@@ -50,14 +50,26 @@ const Memo = styled.input.attrs({
 `;
 
 export default class ProjectInformation extends Component {
+  getTotalLoggedTime = () => {
+    const totalTime = this.props.getTotalTime() / 1000;
+    const totalTimeSeconds = (totalTime % 60) | 0;
+    const totalTimeMinutes = ((totalTime / 60) % 60) | 0;
+    const totalTimeHours = ((totalTime / (60 * 60)) % 24) | 0;
+    const totalTimeDays = (totalTime / (60 * 60 * 24)) | 0;
+    return `${totalTimeDays ? `${totalTimeDays}d ` : ''}${totalTimeHours}h ${totalTimeMinutes}m ${totalTimeSeconds}s`;
+  }
   render() {
-    const totalTime = '0h 0m 0s';
-    const { hasStarted, hasEnded, isPaused } = this.props;
+    const {
+      getDelta,
+      hasStarted,
+      hasEnded,
+      isPaused
+    } = this.props;
 
     return (
       <ProjectInfoContainer {...this.props}>
         <TimeTable>
-          <TotalTime>Total time: {totalTime}</TotalTime>
+          <TotalTime>Total logged time: {this.getTotalLoggedTime()}</TotalTime>
           <TimeRows>
             {/* iterate and print each time entry from punchcard */}
           </TimeRows>
@@ -67,7 +79,7 @@ export default class ProjectInformation extends Component {
           <ClockDisplayWrapper
             hasStarted={hasStarted}
             hasEnded={hasEnded}
-            getDelta={this.props.getDelta}
+            getDelta={getDelta}
           />
           <Memo
             disabled={hasStarted || isPaused}

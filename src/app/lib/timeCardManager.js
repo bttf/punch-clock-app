@@ -177,6 +177,15 @@ class TimeCardManager {
     this.currentSession = null;
   }
 
+  _getSessionTime(session) {
+    const times = session.times || [];
+    return times.reduce((acc, time) => {
+      const start = new Date(time.startTime);
+      const end = time.endTime ? new Date(time.endTime) : new Date();
+      return acc + (end.getTime() - start.getTime());
+    }, 0);
+  }
+
   getCurrentSessionDelta() {
     const currentSession = this.currentSession;
 
@@ -186,13 +195,7 @@ class TimeCardManager {
 
     if (!times || !times.length) return 0;
 
-    const delta = times.reduce((acc, time) => {
-      const start = new Date(time.startTime);
-      const end = time.endTime ? new Date(time.endTime) : new Date();
-      return acc + (end.getTime() - start.getTime());
-    }, 0);
-
-    return delta;
+    return this._getSessionTime(currentSession);
   }
 
   getCurrentSessionStatus() {
@@ -207,6 +210,11 @@ class TimeCardManager {
     }
 
     return recentTime.endTime ? 'paused' : 'started';
+  }
+
+  getTotalTime() {
+    const { sessions } = this.readTimeCard();
+    return sessions.reduce((acc, session) => acc + this._getSessionTime(session), 0);
   }
 }
 

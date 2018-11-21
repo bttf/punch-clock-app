@@ -47,28 +47,26 @@ export default class TimeControl extends Component {
   onStartSession = () => {
     this.props.onStartTime();
     this.timeCardManager.startSession(this.state.memo);
-    this.setState({
-      sessionStatus: this.timeCardManager.getCurrentSessionStatus()
-    });
+    this.updateTimeManagerState();
   }
 
   onPauseSession = () => {
     this.timeCardManager.pauseSession();
-    this.setState({
-      sessionStatus: this.timeCardManager.getCurrentSessionStatus()
-    });
+    this.updateTimeManagerState();
   }
 
   onUnpauseSession = () => {
     this.timeCardManager.unpauseSession();
-    this.setState({
-      sessionStatus: this.timeCardManager.getCurrentSessionStatus()
-    });
+    this.updateTimeManagerState();
   }
 
   onStopSession = () => {
     this.props.onEndTime();
     this.timeCardManager.stopSession();
+    this.updateTimeManagerState();
+  }
+
+  updateTimeManagerState = () => {
     this.setState({
       sessionStatus: this.timeCardManager.getCurrentSessionStatus()
     });
@@ -82,6 +80,7 @@ export default class TimeControl extends Component {
         <Container>
           <ProjectInformationWrapper
             getDelta={() => this.timeCardManager.getCurrentSessionDelta()}
+            getTotalTime={() => this.timeCardManager.getTotalTime()}
             isPaused={sessionStatus === 'paused'}
             hasStarted={sessionStatus === 'started'}
             hasEnded={sessionStatus === 'ended'}

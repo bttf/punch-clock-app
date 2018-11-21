@@ -12,8 +12,8 @@ export default class ClockDisplay extends Component {
     const delta = this.props.getDelta() / 1000;
 
     const second = (delta % 60) | 0;
-    const minute = (delta / 60) | 0;
-    const hour = (minute / 60) | 0;
+    const minute = ((delta / 60) % 60) | 0;
+    const hour = (delta / (60 * 60)) | 0;
 
     const clocktime = {
       second,
@@ -43,7 +43,7 @@ export default class ClockDisplay extends Component {
       }
     }
 
-    setTimeout(this.updateClock, 500);
+    setTimeout(this.updateClock, 200);
   }
 
   render() {
