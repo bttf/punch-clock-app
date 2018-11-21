@@ -12,7 +12,7 @@ export default styled.div`
   /* svg specific css */
   .lcd-element {
     fill: #FFFFFF;
-    transition: all 0.2s ease-out
+    /*transition: all 0.2s ease-out;*/
   }
 
   .lcd-element.dots {

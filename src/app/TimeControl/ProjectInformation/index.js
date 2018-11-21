@@ -87,6 +87,7 @@ export default class ProjectInformation extends Component {
           />
           <Memo
             disabled={hasStarted || isPaused}
+            value={this.props.memo}
             onChange={e => this.props.setMemo(e.currentTarget.value)}
           />
         </ClockAndMemo>

@@ -41,6 +41,8 @@ export default class TimeControl extends Component {
     if (prevProps.project.id !== this.props.project.id) {
       this.timeCardManager = new TimeCardManager(this.props.project.timeCardPath);
       this.setState({
+        memo: '',
+        sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
         timeCardLogs: this.timeCardManager.getTimeCardLogs(),
         totalProjectTime: this.timeCardManager.getTotalTime(),
       })
@@ -91,7 +93,7 @@ export default class TimeControl extends Component {
 
   render() {
     const { project } = this.props;
-    const { sessionStatus, timeCardLogs, totalProjectTime } = this.state;
+    const { memo, sessionStatus, timeCardLogs, totalProjectTime } = this.state;
     return (
       <React.Fragment>
         <Container>
@@ -102,6 +104,7 @@ export default class TimeControl extends Component {
             isPaused={sessionStatus === 'paused'}
             hasStarted={sessionStatus === 'started'}
             hasEnded={sessionStatus === 'ended'}
+            memo={memo}
             setMemo={(memo => this.setState({ memo }))}
           />
           <TriggerWrapper
