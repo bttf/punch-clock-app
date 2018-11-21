@@ -27,19 +27,13 @@ export default class TimeControl extends Component {
   constructor(props) {
     super(props);
 
-    let timeCardState = {};
-    if (props.project.timeCardPath) {
-      this.timeCardManager = new TimeCardManager(props.project.timeCardPath);
-      timeCardState = {
-        sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
-        timeCardLogs: this.timeCardManager.getTimeCardLogs(),
-        totalProjectTime: this.timeCardManager.getTotalTime(),
-      };
-    }
+    this.timeCardManager = new TimeCardManager(props.project.timeCardPath);
 
     this.state = {
       memo: '',
-      ...timeCardState,
+      sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
+      timeCardLogs: this.timeCardManager.getTimeCardLogs(),
+      totalProjectTime: this.timeCardManager.getTotalTime(),
     };
   }
 
@@ -65,27 +59,29 @@ export default class TimeControl extends Component {
   onStartSession = () => {
     this.props.onStartTime();
     this.timeCardManager.startSession(this.state.memo);
-    this.updateTimeManagerState();
+    this.setState({
+      sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
+    });
   }
 
   onPauseSession = () => {
     this.timeCardManager.pauseSession();
-    this.updateTimeManagerState();
+    this.setState({
+      sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
+    });
   }
 
   onUnpauseSession = () => {
     this.timeCardManager.unpauseSession();
-    this.updateTimeManagerState();
+    this.setState({
+      sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
+    });
   }
 
   onStopSession = () => {
     this.props.onEndTime();
     this.timeCardManager.stopSession();
     this.setState({ memo: '' });
-    this.updateTimeManagerState();
-  }
-
-  updateTimeManagerState = () => {
     this.setState({
       sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
       timeCardLogs: this.timeCardManager.getTimeCardLogs(),

@@ -2,6 +2,7 @@ import React, { Component } from 'react'
 import Creatable from 'react-select/lib/Creatable';
 import styled, { createGlobalStyle } from 'styled-components';
 import uuid from 'uuid/v4';
+import { remote } from 'electron';
 import TimeControl from './TimeControl';
 import {
   loadProjects,
@@ -74,6 +75,7 @@ export default class App extends Component {
       id: uuid(),
       name: projectName,
       lastOpened: new Date().toJSON(),
+      timeCardPath: `${remote.app.getPath('appData')}/${projectName}.timecard`,
     };
 
     createProject(newProject);
