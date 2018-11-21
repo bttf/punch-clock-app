@@ -14,6 +14,11 @@ export default styled.div`
     fill: #FFFFFF;
     transition: all 0.2s ease-out
   }
+
+  .lcd-element.dots {
+    fill: #FA4031;
+  }
+
   .lcd-element-active {
     fill: #FA4031;
   }
