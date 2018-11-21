@@ -32,7 +32,19 @@ export default class TimeControl extends Component {
     this.state = {
       memo: '',
       sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
+      timeCardLogs: this.timeCardManager.getTimeCardLogs(),
+      totalProjectTime: this.timeCardManager.getTotalTime(),
     };
+  }
+
+  componentDidUpdate(prevProps) {
+    if (prevProps.project.id !== this.props.project.id) {
+      this.timeCardManager = new TimeCardManager(this.props.project.timeCardPath);
+      this.setState({
+        timeCardLogs: this.timeCardManager.getTimeCardLogs(),
+        totalProjectTime: this.timeCardManager.getTotalTime(),
+      })
+    }
   }
 
   onSetTimeCardPath = (path) => {
@@ -63,24 +75,28 @@ export default class TimeControl extends Component {
   onStopSession = () => {
     this.props.onEndTime();
     this.timeCardManager.stopSession();
+    this.setState({ memo: '' });
     this.updateTimeManagerState();
   }
 
   updateTimeManagerState = () => {
     this.setState({
-      sessionStatus: this.timeCardManager.getCurrentSessionStatus()
+      sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
+      timeCardLogs: this.timeCardManager.getTimeCardLogs(),
+      totalProjectTime: this.timeCardManager.getTotalTime(),
     });
   }
 
   render() {
     const { project } = this.props;
-    const { sessionStatus } = this.state;
+    const { sessionStatus, timeCardLogs, totalProjectTime } = this.state;
     return (
       <React.Fragment>
         <Container>
           <ProjectInformationWrapper
             getDelta={() => this.timeCardManager.getCurrentSessionDelta()}
-            getTotalTime={() => this.timeCardManager.getTotalTime()}
+            timeCardLogs={timeCardLogs}
+            totalProjectTime={totalProjectTime}
             isPaused={sessionStatus === 'paused'}
             hasStarted={sessionStatus === 'started'}
             hasEnded={sessionStatus === 'ended'}
@@ -95,7 +111,7 @@ export default class TimeControl extends Component {
           />
         </Container>
 
-        {/* Displays only if project.punchCardPath is not set */}
+        {/* Displays only if project.timeCardPath is not set */}
         <TimeCardPathModal
           project={project}
           onSetPath={this.onSetTimeCardPath}

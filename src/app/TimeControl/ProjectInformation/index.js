@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import ClockDisplay from './ClockDisplay';
+import parseMilliseconds from '../../lib/parseMilliseconds';
 
 const ProjectInfoContainer = styled.div`
   text-align: left;
@@ -23,10 +24,11 @@ const TotalTime = styled.div`
 
 const TimeRows = styled.div`
   flex: 1;
-  font-size: 1.2rem;
+  font-size: .8rem;
   overflow: auto;
   box-shadow: inset 0 0 10px #ccc;
   white-space: nowrap;
+  padding: 0.5rem;
 `;
 
 const ClockAndMemo = styled.div`
@@ -51,16 +53,16 @@ const Memo = styled.input.attrs({
 
 export default class ProjectInformation extends Component {
   getTotalLoggedTime = () => {
-    const totalTime = this.props.getTotalTime() / 1000;
-    const totalTimeSeconds = (totalTime % 60) | 0;
-    const totalTimeMinutes = ((totalTime / 60) % 60) | 0;
-    const totalTimeHours = ((totalTime / (60 * 60)) % 24) | 0;
-    const totalTimeDays = (totalTime / (60 * 60 * 24)) | 0;
-    return `${totalTimeDays ? `${totalTimeDays}d ` : ''}${totalTimeHours}h ${totalTimeMinutes}m ${totalTimeSeconds}s`;
+    const { seconds, minutes, hours } =
+      parseMilliseconds(this.props.totalProjectTime);
+    const totalTimeHours = (hours % 24) | 0;
+    const totalTimeDays = (hours / 24) | 0;
+    return `${totalTimeDays ? `${totalTimeDays}d ` : ''}${totalTimeHours}h ${minutes}m ${seconds}s`;
   }
   render() {
     const {
       getDelta,
+      timeCardLogs,
       hasStarted,
       hasEnded,
       isPaused
@@ -71,7 +73,9 @@ export default class ProjectInformation extends Component {
         <TimeTable>
           <TotalTime>Total logged time: {this.getTotalLoggedTime()}</TotalTime>
           <TimeRows>
-            {/* iterate and print each time entry from punchcard */}
+            {timeCardLogs.map((log, index) => (
+              <div key={index}>{log}</div>
+            ))}
           </TimeRows>
         </TimeTable>
 

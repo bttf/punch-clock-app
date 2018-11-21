@@ -1,5 +1,6 @@
 import fs from 'fs';
 import uuid from 'uuid/v4';
+import parseMilliseconds from '../lib/parseMilliseconds';
 
 /**
  * TimeCard format
@@ -215,6 +216,17 @@ class TimeCardManager {
   getTotalTime() {
     const { sessions } = this.readTimeCard();
     return sessions.reduce((acc, session) => acc + this._getSessionTime(session), 0);
+  }
+
+  getTimeCardLogs() {
+    const { sessions } = this.readTimeCard();
+    return sessions.reduce((acc, session) => {
+      const date = new Date(session.times[0].startTime);
+      const { seconds, minutes, hours } =
+        parseMilliseconds(this._getSessionTime(session));
+      acc.push(`${date.toLocaleDateString()} - ${hours}h ${minutes}m ${seconds}s${session.memo ? ` - ${session.memo}` : ''}`)
+      return acc;
+    }, []);
   }
 }
 

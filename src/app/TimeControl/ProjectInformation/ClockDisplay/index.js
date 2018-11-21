@@ -1,5 +1,6 @@
 import React, { Component } from 'react';
 import Container from './Container';
+import parseMilliseconds from '../../../lib/parseMilliseconds';
 
 export default class ClockDisplay extends Component {
   state = { timeoutHandler: null };
@@ -9,16 +10,16 @@ export default class ClockDisplay extends Component {
   }
 
   updateClock = () => {
-    const delta = this.props.getDelta() / 1000;
-
-    const second = (delta % 60) | 0;
-    const minute = ((delta / 60) % 60) | 0;
-    const hour = (delta / (60 * 60)) | 0;
+    const {
+      seconds,
+      minutes,
+      hours,
+    } = parseMilliseconds(this.props.getDelta());
 
     const clocktime = {
-      second,
-      minute,
-      hour
+      second: seconds,
+      minute: minutes,
+      hour: hours,
     };
 
     for (let timeUnit in clocktime) {
