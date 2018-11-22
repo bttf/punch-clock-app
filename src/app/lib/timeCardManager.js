@@ -60,13 +60,13 @@ class TimeCardManager {
     return { sessions: sortedSessions };
   }
 
-  writeTimeCard(sessions) {
+  updateTimeCard(sessions) {
     const timeCardPath = this.timeCardPath;
     const sessionsJSON = JSON.stringify({ sessions });
     fs.writeFileSync(timeCardPath, sessionsJSON, 'utf8');
   }
 
-  updateTimeCard(session) {
+  updateSession(session) {
     const { sessions } = this.readTimeCard();
     const existingSession = sessions.find(s => s.id === session.id);
 
@@ -77,7 +77,7 @@ class TimeCardManager {
       updatedSessions = [...sessions, session];
     }
 
-    this.writeTimeCard(updatedSessions);
+    this.updateTimeCard(updatedSessions);
   }
 
   startSession(memo) {
@@ -96,7 +96,7 @@ class TimeCardManager {
       }],
     };
 
-    this.updateTimeCard(this.currentSession);
+    this.updateSession(this.currentSession);
   }
 
   pauseSession() {
@@ -122,7 +122,7 @@ class TimeCardManager {
       }),
     }
 
-    this.updateTimeCard(this.currentSession);
+    this.updateSession(this.currentSession);
   }
 
   unpauseSession() {
@@ -146,7 +146,7 @@ class TimeCardManager {
       }])
     }
 
-    this.updateTimeCard(this.currentSession);
+    this.updateSession(this.currentSession);
   }
 
   stopSession() {
@@ -173,7 +173,7 @@ class TimeCardManager {
       }),
     }
 
-    this.updateTimeCard(this.currentSession);
+    this.updateSession(this.currentSession);
 
     this.currentSession = null;
   }
@@ -224,9 +224,75 @@ class TimeCardManager {
       const date = new Date(session.times[0].startTime);
       const { seconds, minutes, hours } =
         parseMilliseconds(this._getSessionTime(session));
-      acc.push(`${date.toLocaleDateString()} - ${hours}h ${minutes}m ${seconds}s${session.memo ? ` - ${session.memo}` : ''}`)
+      const log = {
+        session,
+        displayTotal: `${date.toLocaleDateString()} - ${hours}h ${minutes}m ${seconds}s${session.memo ? ` - ${session.memo}` : ''}`,
+      };
+      acc.push(log)
       return acc;
     }, []);
+  }
+
+  removeSession(session) {
+    const { sessions } = this.readTimeCard();
+    this.updateTimeCard(sessions.map(s => s.id !== session.id ? s : null).filter(Boolean));
+  }
+
+  // TODO implement this feature in UI
+  alterSessionTime(session, deltaMs) {
+    if (deltaMs >= 0) {
+      const newTimes = session.times.map((t, index, arr) => {
+        if (index < arr.length - 1) return t;
+
+        const endTimeDate = new Date(t.endTime);
+
+        return {
+          ...t,
+          endTime: new Date(endTimeDate.getTime() + deltaMs),
+        };
+      });
+
+      this.updateSession({
+        ...session,
+        times: newTimes,
+      });
+    } else {
+      const sessionTotalTime = this._getSessionTime(session);
+
+      if (deltaMs > sessionTotalTime) {
+        throw new Error('Cannot rollback past 0-time');
+      }
+
+      const newSessionTotal = sessionTotalTime - deltaMs;
+
+      if (newSessionTotal === sessionTotalTime) return;
+
+      const newTimes = session.times.reduce((acc, time) => {
+        const accTimeMs = this._getSessionTime({ times: acc });
+        const startTimeDate = new Date(time.startTime);
+        const endTimeDate = new Date(time.endTime);
+        const timeMs = startTimeDate.getTime() - endTimeDate.getTime();
+
+        if ((accTimeMs + timeMs) < newSessionTotal) {
+          return acc.concat(time);
+        }
+
+        const accDelta =  (accTimeMs + timeMs) - newSessionTotal;
+
+        if (accDelta === timeMs) return acc;
+
+        return acc.concat({
+          ...time,
+          startTime: startTimeDate,
+          endTime: new Date(endTimeDate.getTime() - accDelta),
+        });
+      }, []);
+
+      this.updateSession({
+        ...session,
+        times: newTimes,
+      });
+    }
   }
 }
 

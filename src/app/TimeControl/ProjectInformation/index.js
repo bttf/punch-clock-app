@@ -2,6 +2,7 @@ import { remote } from 'electron';
 import React, { Component } from 'react';
 import styled from 'styled-components';
 import ClockDisplay from './ClockDisplay';
+import TimeLogDisplay from './TimeLogDisplay';
 import parseMilliseconds from '../../lib/parseMilliseconds';
 
 const ProjectInfoContainer = styled.div`
@@ -72,6 +73,11 @@ export default class ProjectInformation extends Component {
     const totalTimeDays = (hours / 24) | 0;
     return `${totalTimeDays ? `${totalTimeDays}d ` : ''}${totalTimeHours}h ${minutes}m ${seconds}s`;
   }
+
+  removeSession = (session) => {
+    this.props.removeSession(session);
+  }
+
   render() {
     const {
       getDelta,
@@ -85,11 +91,10 @@ export default class ProjectInformation extends Component {
       <ProjectInfoContainer {...this.props}>
         <TimeTable>
           <TotalTime>Total logged time: {this.getTotalLoggedTime()}</TotalTime>
-          <TimeRows>
-            {timeCardLogs.map((log, index) => (
-              <div key={index}>{log}</div>
-            ))}
-          </TimeRows>
+          <TimeLogDisplay
+            logs={timeCardLogs}
+            removeSession={this.removeSession}
+          />
         </TimeTable>
 
         <ClockAndMemo>

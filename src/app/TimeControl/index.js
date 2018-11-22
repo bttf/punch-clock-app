@@ -91,6 +91,15 @@ export default class TimeControl extends Component {
     });
   }
 
+  removeSession = (session) => {
+    this.timeCardManager.removeSession(session);
+    this.setState({
+      sessionStatus: this.timeCardManager.getCurrentSessionStatus(),
+      timeCardLogs: this.timeCardManager.getTimeCardLogs(),
+      totalProjectTime: this.timeCardManager.getTotalTime(),
+    });
+  }
+
   render() {
     const { project } = this.props;
     const { memo, sessionStatus, timeCardLogs, totalProjectTime } = this.state;
@@ -106,6 +115,7 @@ export default class TimeControl extends Component {
             hasEnded={sessionStatus === 'ended'}
             memo={memo}
             setMemo={(memo => this.setState({ memo }))}
+            removeSession={this.removeSession}
           />
           <TriggerWrapper
             sessionStatus={sessionStatus}
