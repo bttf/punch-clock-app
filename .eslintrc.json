@@ -1,0 +1,14 @@
+{
+	"extends": [
+		"eslint:recommended",
+		"plugin:react/recommended"
+	],
+	"parser": "babel-eslint",
+	"parserOptions": {
+		"sourceType": "module"
+	},
+	"env": {
+		"node": true,
+		"es6": true
+	}
+}

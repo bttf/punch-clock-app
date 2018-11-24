@@ -12,6 +12,7 @@ import {
 
 const GlobalStyle = createGlobalStyle`
   body {
+    overflow: hidden;
     color: #2c3e50;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   }
