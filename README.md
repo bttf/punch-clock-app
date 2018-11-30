@@ -1,29 +1,40 @@
-# electron-webpack-quick-start
-> A bare minimum project structure to get started developing with [`electron-webpack`](https://github.com/electron-userland/electron-webpack).
+# punch-clock
 
-Thanks to the power of `electron-webpack` this template comes packed with...
+> An electron app that allows you to clock the time you spend working on projects
 
-* Use of [`webpack-dev-server`](https://github.com/webpack/webpack-dev-server) for development
-* HMR for both `renderer` and `main` processes
-* Use of [`babel-preset-env`](https://github.com/babel/babel-preset-env) that is automatically configured based on your `electron` version
-* Use of [`electron-builder`](https://github.com/electron-userland/electron-builder) to package and build a distributable electron application
+![](/assets/punch-clock-01.png?raw=true)
 
-Make sure to check out [`electron-webpack`'s documentation](https://webpack.electron.build/) for more details.
+This project was motivated by the need to measure how much time I spend on programming projects, for example making sure I spend at least an hour a day on some.
+
+## Download
+
+Check out the releases page for the latest builds
+
+https://github.com/bttf/punch-clock/releases
+
+## Quick how-to
+1. Open the app
+1. Create a project
+2. Optionally enter a memo to describe how your time will be spent
+3. Hit Start!
+
+You can start, pause, resume, and stop the clock. If the app is closed without stopping the clock, it will 'keep counting', and remain in progress when re-opened (there are no background jobs, as the app utilizes timestamps to measure time elapsed). If the app is closed after pausing the clock, it will treat it as if you stopped the clock.
+
+Logs of previous timings will appear in the left-hand window, and can be individually deleted using the delete link when hovering your cursor over them.
+
+This was built with electron and React, and utilizes the local filesystem to create `.timecard` files that store your data.
+
+## Wanted features
+
+- Ability to modify existing time logs (+/- time)
+- More control around `.timecard` file (import, export, edit path)
+- Use \~the cloud\~ (eventually)
 
 ## Getting Started
-Simply clone down this reposity, install dependencies, and get started on your application.
-
-The use of the [yarn](https://yarnpkg.com/) package manager is **strongly** recommended, as opposed to using `npm`.
 
 ```bash
-# create a directory of your choice, and copy template using curl
-mkdir new-electron-webpack-project && cd new-electron-webpack-project
-curl -fsSL https://github.com/electron-userland/electron-webpack-quick-start/archive/master.tar.gz | tar -xz --strip-components 1
-
-# or copy template using git clone
-git clone https://github.com/electron-userland/electron-webpack-quick-start.git
-cd electron-webpack-quick-start
-rm -rf .git
+git clone https://github.com/bttf/punch-clock.git
+cd punch-clock
 
 # install dependencies
 yarn

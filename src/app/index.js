@@ -12,6 +12,7 @@ import {
 
 const GlobalStyle = createGlobalStyle`
   body {
+    overflow: hidden;
     color: #2c3e50;
     font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol";
   }
@@ -40,18 +41,6 @@ const ProjectSelectPrompt = styled.p`
 const ProjectSelect = styled.div`
   margin: 1rem 0;
   color: #aaa;
-`;
-
-const Credits = styled.div`
-  padding: 1rem;
-  font-size: 12px;
-  color: #aaa;
-
-  a {
-    color: #aaa;
-    cursor: pointer;
-    text-decoration: underline;
-  }
 `;
 
 const genOption = (project) => ({ label: project.name, value: project.id });
@@ -87,7 +76,7 @@ export default class App extends Component {
       id: uuid(),
       name: projectName,
       lastOpened: new Date().toJSON(),
-      timeCardPath: `${remote.app.getPath('appData')}/${projectName}.timecard`,
+      timeCardPath: `${remote.app.getPath('userData')}/${projectName}.timecard`,
     };
 
     createProject(newProject);
@@ -140,9 +129,6 @@ export default class App extends Component {
               onEndTime={() => this.disableInputs(false)}
             />
           )}
-          <Credits>
-            A <a onClick={() => remote.shell.openExternal('http://redpine.software')}>redpine.software</a> production
-          </Credits>
         </AppWrapper>
       </React.Fragment>
     );
